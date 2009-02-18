@@ -1,1 +1,2 @@
 require 'settingable'
+require 'setting'
