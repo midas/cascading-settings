@@ -1,0 +1,15 @@
+= Cascading Settings Plugin
+
+
+
+
+== Setup
+
+You must create the table used by the Settings model.  Simply run this command:
+  ruby script/generate cascading_settings_migration
+
+Now just put that migration in the database with:
+  rake db:migrate
+
+
+== Usage
