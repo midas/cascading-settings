@@ -40,10 +40,6 @@ class Setting < ActiveRecord::Base
   }
   
   def self.resolve_all( settingable )
-    
-  end
-  
-  def self.resolve( settingable, var_name )
     system_level = self.for_system
     if settingable.is_a?( Account )
       account_level = self.for_account( settingable )
@@ -69,6 +65,21 @@ class Setting < ActiveRecord::Base
     end
     
     system_hash.merge( account_hash ).merge( user_hash )
+  end
+  
+  def self.resolve( settingable, var_name )
+    system_level = self.object( var_name )
+    if settingable.is_a?( Account )
+      account_level = self.object_scoped( settingable, var_name )
+    elsif settingable.is_a?( User )
+      account_level = self.object_scoped( settingable.account, var_name )
+      user_level = self.object_scoped( settingable, var_name )
+    end
+    
+    return user_level.value unless user_level.nil?
+    return account_level.value unless account_level.nil?
+    return system_level.value unless system_level.nil?
+    nil
   end
   
   def self.all
@@ -117,7 +128,7 @@ class Setting < ActiveRecord::Base
   
   #retrieve the actual Setting record
   def self.object(var_name)
-    find( :first, :conditions => { :var => var_name.to_s } )
+    find( :first, :conditions => { :var => var_name.to_s, :settingable_type => nil } )
   end
   
   #retrieve the actual scoped Setting record
