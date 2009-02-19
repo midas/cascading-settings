@@ -1,5 +1,8 @@
 class Setting < ActiveRecord::Base
   
+  cattr_accessor :defaults
+  @@defaults = {}.with_indifferent_access
+  
   #get or set a variable with the variable as the called method
   def self.method_missing(method, *args)
     method_name = method.to_s
@@ -39,13 +42,15 @@ class Setting < ActiveRecord::Base
       { :conditions => conditions } 
   }
   
-  def self.resolve_all( settingable )
+  def self.resolve_all( settingable=nil )
     system_level = self.for_system
-    if settingable.is_a?( Account )
-      account_level = self.for_account( settingable )
-    elsif settingable.is_a?( User )
-      account_level = self.for_account( settingable.account )
-      user_level = self.for_user( settingable )
+    unless settingable.nil?
+      if settingable.is_a?( Account )
+        account_level = self.for_account( settingable )
+      elsif settingable.is_a?( User )
+        account_level = self.for_account( settingable.account )
+        user_level = self.for_user( settingable )
+      end
     end
     
     system_hash = {}
@@ -53,6 +58,7 @@ class Setting < ActiveRecord::Base
       system_hash[record.var] = record.value
     end
     
+    account_level = Array.new if account_level.nil?
     account_hash = {}
     account_level.each do |record|
       account_hash[record.var] = record.value
@@ -82,24 +88,21 @@ class Setting < ActiveRecord::Base
     nil
   end
   
-  def self.all
-    vars = find(:all, :select => 'var, value')
-    
-    result = {}
-    vars.each do |record|
-      result[record.var] = record.value
-    end
-    result.with_indifferent_access
-  end
+  #def self.all
+  #  vars = find(:all, :select => 'var, value')
+  #  
+  #  result = {}
+  #  vars.each do |record|
+  #    result[record.var] = record.value
+  #  end
+  #  result.with_indifferent_access
+  #end
 
   #retrieve a setting value by [:var_name] or [scoping_object => :var_name] notation
-  def self.[](var_name_or_hash)
+  def self.[]( var_name_or_hash )
     if var_name_or_hash.is_a?( Hash )
-      if var = object_scoped( var_name_or_hash.shift )
-        var.value
-      else
-        nil
-      end
+      settingable, var_name = var_name_or_hash.shift
+      self.resolve( settingable, var_name )
     else
       var_name = var_name_or_hash
       if var = object( var_name )

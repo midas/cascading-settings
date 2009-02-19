@@ -1,6 +1,13 @@
 = Cascading Settings Plugin
 
+This is a settings plugin that allows for a system level, account level an duser level setting to set.  It can
+  then resolve the settings for the system, account or user level, giving user priority, then aaccount and 
+  finally system.  It works very similar to cascading permissions.
 
+This is an adaption of the rails-settings plugin by Squeegy at: http://github.com/Squeegy/rails-settings/tree/master.
+  I thought about forking the plugin, however, decided against it due to the major change in functionality.  I did 
+  not want to add additional complexity to the rather simple base case for the original plugin.  So a complete break
+  makes the most sense.  I do want to give Squeegy all the credit for the inspiration and much of the code.
 
 
 == Setup
@@ -13,3 +20,58 @@ Now just put that migration in the database with:
 
 
 == Usage
+
+All functionality from the rails-settings works the same, excluding the all method, which is gone, giving the method 
+  back to the ACtiveRecord version.  Please see http://github.com/Squeegy/rails-settings/tree/master for details.
+
+Creating a scoped setting:
+
+  Setting.per_page = 15                  # sets a system level setting (settingable_type and settingable_id is nil)
+  Setting[:per_page] = 15                # the same as the last line
+  Setting[@account => :per_page] = 25    # sets an account level setting (settingable_type = 'Account' and settingable_id = @account.id)
+  Setting[@user => :per_page] = 30       # sets a user level setting (settingable_type = 'User' and settingable_id = @user.id)
+
+
+Read it back with:
+
+  Setting[:per_page]                      # = 15
+  Setting[@account => :per_page]          # = 25
+  Setting.resolve( @account, :per_page )  # The same as the line above
+  Setting[@user => :per_page]             # = 30
+  Setting.resolve( @user, :per_page )     # The same as the line above
+  Setting.resolve_all                     # = {"per_page" => 15}
+  Setting.resolve_all( @account )         # = {"per_page" => 25}
+  Setting.resolve_all( @user )            # = {"per_page" => 30}
+
+
+A little more complex example, the inputs:
+
+  Setting.per_page = 15
+  Setting.only_system = 'system'
+  Setting[@account => :per_page] = 25
+  Setting[@account => :only_account] = 'account'
+  Setting[@user => :per_page] = 30
+  Setting[@user => :only_user] = 'user'
+
+
+Read it back:
+
+  Setting[:per_page]                    # = 15
+  Setting[@account => :per_page]        # = 25
+  Setting[@user => :per_page]           # = 30
+  Setting[:only_system]                 # = 'system'
+  Setting[:only_account]                # = nil
+  Setting[:only_user]                   # = nil
+  Setting[@account => :only_system]     # = 'system'
+  Setting[@account => :only_account]    # = 'account'
+  Setting[@account => :only_user]       # = nil
+  Setting[@user => :only_system]        # = 'system'
+  Setting[@user => :only_account]       # = 'account'
+  Setting[@user => :only_user]          # = 'user'
+  Setting.resolve_all                   # = {"only_system"=>"system", "per_page"=>15}
+  Setting.resolve_all( @account )       # = {"only_system"=>"system", "only_account"=>"account", "per_page"=>25}
+  Setting.resolve_all( @user )          # = {"only_system"=>"system", "only_account"=>"account", "per_page"=>30, "only_user"=>"user"}
+
+
+So that is pretty much it.  I plan on implementing some mroe convenience methods in the future.
+  
