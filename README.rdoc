@@ -73,5 +73,6 @@ Read it back:
   Setting.resolve_all( @user )          # = {"only_system"=>"system", "only_account"=>"account", "per_page"=>30, "only_user"=>"user"}
 
 
-So that is pretty much it.  I plan on implementing some mroe convenience methods in the future.
+So that is pretty much it.  I plan on implementing some mroe convenience methods in the future.  I also plan
+to make the name of teh account and user models configurable, etc...
   
