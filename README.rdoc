@@ -74,5 +74,5 @@ Read it back:
 
 
 So that is pretty much it.  I plan on implementing some mroe convenience methods in the future.  I also plan
-to make the name of teh account and user models configurable, etc...
+to make the name of the account and user models configurable, etc...
   
