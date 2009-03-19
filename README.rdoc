@@ -13,16 +13,18 @@ makes the most sense.  I do want to give Squeegy all the credit for the inspirat
 == Setup
 
 You must create the table used by the Settings model.  Simply run this command:
-  ruby script/generate cascading_settings_migration
+  
+  script/generate cascading_settings_migration
 
 Now just put that migration in the database with:
+  
   rake db:migrate
 
 
 == Usage
 
 All functionality from the rails-settings works the same, excluding the all method, which is gone, giving the method 
-  back to the ACtiveRecord version.  Please see http://github.com/Squeegy/rails-settings/tree/master for details.
+back to the ActiveRecord version.  Please see http://github.com/Squeegy/rails-settings/tree/master for details.
 
 Creating a scoped setting:
 
