@@ -26,6 +26,16 @@ Now just put that migration in the database with:
 All functionality from the rails-settings works the same, excluding the all method, which is gone, giving the method 
 back to the ActiveRecord version.  Please see http://github.com/Squeegy/rails-settings/tree/master for details.
 
+In your account and user models:
+
+  class Account < ActiveRecord::Base
+    settingable
+  end
+
+  class User < ActiveRecord::Base
+    settingable
+  end
+
 Creating a scoped setting:
 
   Setting.per_page = 15                  # sets a system level setting (settingable_type and settingable_id is nil)
