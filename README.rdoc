@@ -1,7 +1,7 @@
 = Cascading Settings Plugin
 
-This is a settings plugin that allows for a system level, account level an duser level setting to set.  It can
-then resolve the settings for the system, account or user level, giving user priority, then aaccount and 
+This is a settings plugin that allows for a system level, account level and user level setting to set.  It can
+then resolve the settings for the system, account or user level, giving user priority, then account and 
 finally system.  It works very similar to cascading permissions.
 
 This is an adaption of the rails-settings plugin by Squeegy at: http://github.com/Squeegy/rails-settings/tree/master.
