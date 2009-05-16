@@ -1,2 +1,1 @@
-require 'settingable'
-require 'setting'
+require 'cascading_settings'
