@@ -1,7 +1,7 @@
 = Cascading Settings Plugin
 
-This is a settings plugin that allows for a system level, account level an duser level setting to set.  It can
-then resolve the settings for the system, account or user level, giving user priority, then aaccount and 
+This is a settings plugin that allows for a system level, account level and user level setting to set.  It can
+then resolve the settings for the system, account or user level, giving user priority, then account and 
 finally system.  It works very similar to cascading permissions.
 
 This is an adaption of the rails-settings plugin by Squeegy at: http://github.com/Squeegy/rails-settings/tree/master.
@@ -13,16 +13,28 @@ makes the most sense.  I do want to give Squeegy all the credit for the inspirat
 == Setup
 
 You must create the table used by the Settings model.  Simply run this command:
-  ruby script/generate cascading_settings_migration
+  
+  script/generate cascading_settings_migration
 
 Now just put that migration in the database with:
+  
   rake db:migrate
 
 
 == Usage
 
 All functionality from the rails-settings works the same, excluding the all method, which is gone, giving the method 
-  back to the ACtiveRecord version.  Please see http://github.com/Squeegy/rails-settings/tree/master for details.
+back to the ActiveRecord version.  Please see http://github.com/Squeegy/rails-settings/tree/master for details.
+
+In your account and user models:
+
+  class Account < ActiveRecord::Base
+    settingable
+  end
+
+  class User < ActiveRecord::Base
+    settingable
+  end
 
 Creating a scoped setting:
 
@@ -73,6 +85,6 @@ Read it back:
   Setting.resolve_all( @user )          # = {"only_system"=>"system", "only_account"=>"account", "per_page"=>30, "only_user"=>"user"}
 
 
-So that is pretty much it.  I plan on implementing some mroe convenience methods in the future.  I also plan
+So that is pretty much it.  I plan on implementing some more convenience methods in the future.  I also plan
 to make the name of the account and user models configurable, etc...
   
