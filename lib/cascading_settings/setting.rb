@@ -123,12 +123,12 @@ module CascadingSettings
 
     #set a setting value by [:var_name] or [scoping_object => :var_name] notation
     def self.[]=( var_name_or_hash, value )
-      var_name = var_name.to_s
       if var_name_or_hash.is_a?( Hash )
         settingable, var_name = var_name_or_hash.shift
+        var_name = var_name.to_sym
         record = object_scoped( settingable, var_name ) || settingable.settings.build( :var => var_name.to_s )
       else
-        var_name = var_name_or_hash
+        var_name = var_name_or_hash.to_sym
         record = object(var_name) || Setting.new( :var => var_name.to_s )
       end
       record.value = value
