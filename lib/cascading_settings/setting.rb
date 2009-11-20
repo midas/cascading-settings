@@ -53,28 +53,31 @@ module CascadingSettings
           user_level = self.for_user( settingable )
         end
       end
+      
+      default_hash = @@defaults
 
       system_hash = {}
       system_level.each do |record|
-        system_hash[record.var] = record.value
+        system_hash[(record.var).to_sym] = record.value
       end
 
       account_level = Array.new if account_level.nil?
       account_hash = {}
       account_level.each do |record|
-        account_hash[record.var] = record.value
+        account_hash[(record.var).to_sym] = record.value
       end
 
       user_level = Array.new if user_level.nil?
       user_hash = {}
       user_level.each do |record|
-        user_hash[record.var] = record.value
+        user_hash[(record.var).to_sym] = record.value
       end
 
-      system_hash.merge( account_hash ).merge( user_hash )
+      default_hash.merge(system_hash).merge( account_hash ).merge( user_hash )
     end
 
     def self.resolve( settingable, var_name )
+      default_level = self.send(var_name)
       system_level = self.object( var_name )
       if settingable.is_a?( Account )
         account_level = self.object_scoped( settingable, var_name )
@@ -86,6 +89,7 @@ module CascadingSettings
       return user_level.value unless user_level.nil?
       return account_level.value unless account_level.nil?
       return system_level.value unless system_level.nil?
+      return default_level unless default_level.nil?
       nil
     end
 
@@ -103,13 +107,14 @@ module CascadingSettings
     def self.[]( var_name_or_hash )
       if var_name_or_hash.is_a?( Hash )
         settingable, var_name = var_name_or_hash.shift
+        var_name = var_name.to_sym
         self.resolve( settingable, var_name )
       else
-        var_name = var_name_or_hash
+        var_name = var_name_or_hash.to_sym
         if var = object( var_name )
           var.value
-        elsif @@defaults[var_name.to_s]
-          @@defaults[var_name.to_s]
+        elsif @@defaults[var_name]
+          @@defaults[var_name]
         else
           nil
         end
