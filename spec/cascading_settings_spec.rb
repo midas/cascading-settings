@@ -4,6 +4,7 @@ describe "Cascading Settings" do
     Setting.delete_all
     Account.delete_all
     User.delete_all
+    Setting.defaults = {}
   end
   describe "Where one setting resolves properly" do
     describe "Default" do
@@ -82,28 +83,28 @@ describe "Cascading Settings" do
     end
     it "should resolve all settings in a hash" do
       Setting.resolve_all.should eql({
-        "default_setting" => "default",
-        "system_setting"  => "system"
+        :default_setting => "default",
+        :system_setting  => "system"
         })
 
       Setting.resolve_all(@account).should eql({
-        "default_setting" => "default",
-        "system_setting"  => "system",
-        "account_setting" => "account"
+        :default_setting => "default",
+        :system_setting  => "system",
+        :account_setting => "account"
         })
 
       Setting.resolve_all(@user).should eql({
-        "default_setting" => "default",
-        "system_setting"  => "system",
-        "account_setting" => "account",
-        "user_setting"    => "user"
+        :default_setting => "default",
+        :system_setting  => "system",
+        :account_setting => "account",
+        :user_setting    => "user"
         })
     end
   end
   describe "Where default setting" do
     it "is returned on resolve_all" do
       Setting.defaults[:default_setting] = "default"
-      Setting.resolve_all.should eql({"default_setting" => "default"})
+      Setting.resolve_all.should eql({:default_setting => "default"})
     end
   end
 end
