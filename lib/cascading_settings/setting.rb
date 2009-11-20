@@ -73,22 +73,25 @@ module CascadingSettings
         user_hash[(record.var).to_sym] = record.value
       end
 
-      default_hash.merge(system_hash).merge( account_hash ).merge( user_hash )
+      default_hash.merge( system_hash ).merge( account_hash ).merge( user_hash )
     end
 
     def self.resolve( settingable, var_name )
-      default_level = self.send(var_name)
-      system_level = self.object( var_name )
+      if settingable.is_a?( User )
+        user_level = self.object_scoped( settingable, var_name )
+        return user_level.value unless user_level.nil?
+        account_level = self.object_scoped( settingable.account, var_name )
+        return account_level.value unless account_level.nil?
+      end
+      
       if settingable.is_a?( Account )
         account_level = self.object_scoped( settingable, var_name )
-      elsif settingable.is_a?( User )
-        account_level = self.object_scoped( settingable.account, var_name )
-        user_level = self.object_scoped( settingable, var_name )
+        return account_level.value unless account_level.nil?
       end
-
-      return user_level.value unless user_level.nil?
-      return account_level.value unless account_level.nil?
+      
+      system_level = self.object( var_name )
       return system_level.value unless system_level.nil?
+      default_level = self.send(var_name)
       return default_level unless default_level.nil?
       nil
     end
