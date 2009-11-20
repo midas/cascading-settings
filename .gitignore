@@ -1,3 +1,13 @@
 .* # Ignore all dotfiles...
 !.gitignore # except for .gitignore
 *.svn
+.DS_Store
+log/*.log
+config/database.yml
+tmp/*
+public/files
+db_backups/*
+public/stylesheets/*.css
+**/._*
+._*
+
